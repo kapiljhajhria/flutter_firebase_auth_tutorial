@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_authentication_tutorial/app_user.dart';
+import 'package:firebase_authentication_tutorial/auth_user_screen.dart';
 import 'package:firebase_authentication_tutorial/authentication_service.dart';
 import 'package:firebase_authentication_tutorial/home_page.dart';
 import 'package:firebase_authentication_tutorial/sign_in_page.dart';
@@ -21,7 +23,8 @@ class MyApp extends StatelessWidget {
           create: (_) => AuthenticationService(FirebaseAuth.instance),
         ),
         StreamProvider(
-          create: (context) => context.read<AuthenticationService>().authStateChanges,
+          create: (context) =>
+              context.read<AuthenticationService>().authStateChanges,
         )
       ],
       child: MaterialApp(
@@ -39,10 +42,10 @@ class MyApp extends StatelessWidget {
 class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final firebaseUser = context.watch<User>();
+    final firebaseUser = context.watch<AppUser>();
 
     if (firebaseUser != null) {
-      return HomePage();
+      return AuthUserScreen();
     }
     return SignInPage();
   }

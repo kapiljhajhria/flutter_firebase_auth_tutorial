@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_authentication_tutorial/app_user.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth;
@@ -6,7 +7,14 @@ class AuthenticationService {
   AuthenticationService(this._firebaseAuth);
 
   /// Changed to idTokenChanges as it updates depending on more cases.
-  Stream<User> get authStateChanges => _firebaseAuth.idTokenChanges();
+  AppUser _userFromFirebase(User user) {
+    return user == null
+        ? null
+        : AppUser(fullName: user.displayName, email: user.email, uid: user.uid);
+  }
+
+  Stream<AppUser> get authStateChanges =>
+      _firebaseAuth.idTokenChanges().map(_userFromFirebase);
 
   /// This won't pop routes so you could do something like
   /// Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
@@ -21,7 +29,8 @@ class AuthenticationService {
   /// error messages. That way you can throw, return or whatever you prefer with that instead.
   Future<String> signIn({String email, String password}) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+      await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
       return "Signed in";
     } on FirebaseAuthException catch (e) {
       return e.message;
@@ -34,7 +43,8 @@ class AuthenticationService {
   /// error messages. That way you can throw, return or whatever you prefer with that instead.
   Future<String> signUp({String email, String password}) async {
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+      await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
       return "Signed up";
     } on FirebaseAuthException catch (e) {
       return e.message;
